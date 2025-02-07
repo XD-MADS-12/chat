@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Firebase Chat App</title>
+    <!-- Firebase SDK import -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.0.0/firebase-app.js";
+        import { getDatabase, ref, set, push, onChildAdded } from "https://www.gstatic.com/firebasejs/9.0.0/firebase-database.js";
+
+        // Firebase configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyBFvO9xcDhSFS-73aRLtADGcmc2Fu1I9a0",
+            authDomain: "chatapp-de2b4.firebaseapp.com",
+            projectId: "chatapp-de2b4",
+            storageBucket: "chatapp-de2b4.firebasestorage.app",
+            messagingSenderId: "639375013067",
+            appId: "1:639375013067:web:b26d82d86e4adbb1bc174e",
+            measurementId: "G-SLHXK61BHD"
+        };
+
+        // Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+        const database = getDatabase(app);
+
+        // Function to send messages
+        function sendMessage() {
+            const message = document.getElementById("messageInput").value.trim();
+            if (message) {
+                // Push message to Firebase Realtime Database
+                const messagesRef = ref(database, 'messages');
+                push(messagesRef, {
+                    message: message,
+                    timestamp: Date.now()
+                });
+            }
+            document.getElementById("messageInput").value = ''; // Clear input field
+        }
+
+        // Listening for new messages
+        const messagesRef = ref(database, 'messages');
+        onChildAdded(messagesRef, (snapshot) => {
+            const message = snapshot.val().message;
+            const messagesDiv = document.getElementById("messages");
+            const messageElement = document.createElement("div");
+            messageElement.textContent = message;
+            messagesDiv.appendChild(messageElement);
+        });
+    </script>
+</head>
+<body>
+    <h2>Firebase Chat App</h2>
+    <div id="messages"></div>
+    <input type="text" id="messageInput" placeholder="Type a message...">
+    <button onclick="sendMessage()">Send</button>
+</body>
+  </html>
